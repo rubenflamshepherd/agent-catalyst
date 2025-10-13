@@ -26,7 +26,6 @@ Rule #1: If you want exception to ANY rule, YOU MUST STOP and get explicit permi
   together before implementation. Routine fixes and clear implementations don't need
   discussion.
 
-
 # Proactiveness
 
 When asked to do something, just do it - including obvious follow-up actions needed to complete the task properly.
@@ -41,7 +40,6 @@ When asked to do something, just do it - including obvious follow-up actions nee
 
 - YAGNI. The best code is no code. Don't add features we don't need right now.
 - When it doesn't conflict with YAGNI, architect for extensibility and flexibility.
-
 
 ## Test Driven Development  (TDD)
  
@@ -63,8 +61,6 @@ When asked to do something, just do it - including obvious follow-up actions nee
 - YOU MUST MATCH the style and formatting of surrounding code, even if it differs from standard style guides. Consistency within a file trumps external standards.
 - YOU MUST NOT manually change whitespace that does not affect execution or output. Otherwise, use a formatting tool.
 - Fix broken things immediately when you find them. Don't ask permission to fix bugs.
-
-
 
 ## Naming
 
@@ -109,6 +105,14 @@ When asked to do something, just do it - including obvious follow-up actions nee
 - YOU MUST commit frequently throughout the development process, even if your high-level tasks are not yet done. Commit your journal entries.
 - NEVER SKIP, EVADE OR DISABLE A PRE-COMMIT HOOK
 - NEVER use `git add -A` unless you've just done a `git status` - Don't add random test files to the repo.
+
+## Voice-to-Text Context
+
+I am using a voice-to-text tool to dictate my responses to Claude Code. Please be aware that:
+
+- The word "sequel" may be used to represent "SQL" or "Structured Query Language"
+- Other voice-to-text transcription errors may occur in my messages
+- Please interpret context appropriately when commands or technical terms may have been transcribed incorrectly
 
 ## Docker and Dev Containers
 
@@ -184,3 +188,6 @@ YOU MUST follow this debugging framework for ANY technical issue:
 - Track patterns in user feedback to improve collaboration over time
 - When you notice something that should be fixed but is unrelated to your current task, document it in your journal rather than fixing it immediately
 
+## Current Project
+
+This repository is a bootstrapping solution for developers to quickly set up both local development and production cloud environments. It serves as a template that other developers can copy and use with minimal configuration effort. The web application itself is intentionally minimal, featuring only a default landing screen - the focus is on providing a solid infrastructure foundation rather than application functionality.

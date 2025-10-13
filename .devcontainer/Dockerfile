@@ -50,6 +50,13 @@ RUN pip install --no-cache-dir -r app/requirements.txt
 RUN mkdir -p /home/devuser/.config/gcloud && \
     chown -R devuser:devuser /home/devuser/.config
 
+# Configure git aliases for devuser
+RUN echo 'alias gs="git status"' >> /home/devuser/.bashrc && \
+    echo 'alias gcam="git commit --all --message"' >> /home/devuser/.bashrc && \
+    echo 'alias gd="git diff"' >> /home/devuser/.bashrc && \
+    echo 'alias vamos="claude --dangerously-skip-permissions"' >> /home/devuser/.bashrc && \
+    chown devuser:devuser /home/devuser/.bashrc
+
 # Set ownership and switch to non-root user
 RUN chown -R devuser:devuser /workspace
 USER devuser
