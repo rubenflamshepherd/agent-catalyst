@@ -19,4 +19,5 @@ services:
       - ./:/workspace/
       - ~/.ssh:/home/devuser/.ssh:ro
       - ~/.config/gcloud:/home/devuser/.config/gcloud
+      - ~/.config/gh:/home/devuser/.config/gh:ro
     command: sleep infinity
