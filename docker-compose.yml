@@ -17,5 +17,6 @@ services:
       - .env
     volumes:
       - ./:/workspace/
-      - ~/.ssh:/root/.ssh:ro
+      - ~/.ssh:/home/devuser/.ssh:ro
+      - ~/.config/gcloud:/home/devuser/.config/gcloud
     command: sleep infinity

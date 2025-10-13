@@ -110,6 +110,25 @@ When asked to do something, just do it - including obvious follow-up actions nee
 - NEVER SKIP, EVADE OR DISABLE A PRE-COMMIT HOOK
 - NEVER use `git add -A` unless you've just done a `git status` - Don't add random test files to the repo.
 
+## Docker and Dev Containers
+
+- When modifying the dev container or Dockerfile, YOU MUST build and run the container to verify changes work correctly.
+- YOU MUST shut down test containers when you're done with them.
+- Use these commands to test dev container changes:
+  ```bash
+  # Build the dev container
+  docker build -f .devcontainer/Dockerfile -t agent-catalyst-devcontainer .
+
+  # Start the container in background
+  docker run -d --name agent-catalyst-dev agent-catalyst-devcontainer tail -f /dev/null
+
+  # Run verification commands (example: checking Claude Code)
+  docker exec agent-catalyst-dev claude --version
+
+  # Clean up when done - ALWAYS do this
+  docker stop agent-catalyst-dev && docker rm agent-catalyst-dev
+  ```
+
 ## Testing
 
 - ALL TEST FAILURES ARE YOUR RESPONSIBILITY, even if they're not your fault. The Broken Windows theory is real.
