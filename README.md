@@ -21,8 +21,7 @@ Integrations for agents
 
 I'll be outlining how to do this on MacOS using homebrew. Mainly because I believe that to be a pretty common setup for developers. However, this should be doable in other setups with minimal adaptations/changes.
 
-## Let's go
-
+## Setup your local development environment
 
 1. Docker
    
@@ -35,11 +34,27 @@ Once it is installed make sure Docker Desktop is running.
    
 2. Standup your local environment
    
-Build your local environment by running `docker compose build` in the command line from the root of this project. This will take a few minutes the first time. Once that is done run `docker compose up` and navigate to localhost:8080. You should see our generic landing page.
+Build your local environment by running the following in the command line from the root of this project.
 
-3. Stand up your production environment
+```bash
+docker compose build
+```
+This will take a few minutes the first time. Once that is done run
 
-1. 
+```bash
+docker compose up
+```
+
+Navigate to localhost:8080 and you should see our generic landing page!
+
+## Setup your cloud production environment
+
+
+1. Install [Terraform](https://developer.hashicorp.com/terraform/tutorials/gcp-get-started/install-cli)
+
+2. Install [gcloud CLI](https://cloud.google.com/sdk/docs/install)
+   
+3. 
 
 
 
