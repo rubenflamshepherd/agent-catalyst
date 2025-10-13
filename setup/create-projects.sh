@@ -10,11 +10,21 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONFIG_FILE="$SCRIPT_DIR/../.setup-config"
+
 echo "=== GCP Project Creation ==="
 echo ""
 
-# Prompt for app name
-read -p "Enter app name: " APP_NAME
+# Check for existing configuration
+if [[ -f "$CONFIG_FILE" ]]; then
+    source "$CONFIG_FILE"
+fi
+
+# Use environment variable if set, otherwise prompt
+if [[ -z "$APP_NAME" ]]; then
+    read -p "Enter app name: " APP_NAME
+fi
 
 # Validate input
 if [[ -z "$APP_NAME" ]]; then
@@ -34,8 +44,10 @@ if [[ ! "$APP_NAME" =~ ^[a-z][a-z0-9-]*$ ]]; then
     exit 1
 fi
 
-# Generate random 6-character hex suffix
-SUFFIX=$(openssl rand -hex 3)
+# Generate or reuse random 6-character hex suffix
+if [[ -z "$SUFFIX" ]]; then
+    SUFFIX=$(openssl rand -hex 3)
+fi
 
 # Create project IDs
 PROD_PROJECT="${APP_NAME}-prod-${SUFFIX}"
@@ -78,25 +90,32 @@ if [[ "$CREATE" != "y" ]]; then
 fi
 
 echo ""
-echo "Creating projects..."
 
-# Create prod project
-echo -e "${YELLOW}Creating prod project...${NC}"
-if gcloud projects create "$PROD_PROJECT" --name="$APP_NAME Production" --quiet; then
-    echo -e "${GREEN}✓ Prod project created: $PROD_PROJECT${NC}"
+# Check if project already exists (idempotency)
+if gcloud projects describe "$PROD_PROJECT" &> /dev/null; then
+    echo -e "${GREEN}✓ Prod project already exists: $PROD_PROJECT${NC}"
 else
-    echo -e "${RED}✗ Failed to create prod project${NC}"
-    echo -e "${YELLOW}Note: Dev project was created successfully${NC}"
-    exit 1
+    echo "Creating projects..."
+
+    # Create prod project
+    echo -e "${YELLOW}Creating prod project...${NC}"
+    if gcloud projects create "$PROD_PROJECT" --name="$APP_NAME Production" --quiet; then
+        echo -e "${GREEN}✓ Prod project created: $PROD_PROJECT${NC}"
+    else
+        echo -e "${RED}✗ Failed to create prod project${NC}"
+        exit 1
+    fi
 fi
 
+# Save configuration for other scripts
+cat > "$CONFIG_FILE" << EOF
+# Auto-generated configuration from setup process
+export APP_NAME="$APP_NAME"
+export SUFFIX="$SUFFIX"
+export PROD_PROJECT="$PROD_PROJECT"
+EOF
+
 echo ""
-echo -e "${GREEN}=== Success ===${NC}"
+echo -e "${GREEN}✓ Configuration saved${NC}"
 echo ""
-echo "Next steps:"
-echo "  1. Set default project: gcloud config set project $DEV_PROJECT"
-echo "  2. Enable billing: https://console.cloud.google.com/billing/linkedaccount?project=$DEV_PROJECT"
-echo "  3. Enable required APIs for your projects"
-echo ""
-echo "Project IDs have been saved for reference:"
-echo "  Prod: $PROD_PROJECT"
+echo "Project ID: $PROD_PROJECT"

@@ -21,88 +21,91 @@ Integrations for agents
 
 I'll be outlining how to do this on MacOS using homebrew. Mainly because I believe that to be a pretty common setup for developers. However, this should be doable in other setups with minimal adaptations/changes.
 
-## Setup your local development environment
+## Quick Start
 
-1. Docker
-   
-Docker is what is going to allow us to setup the same local environment regardless of what base OS (MacOS, Windows, etc.) you are coming from. Install it for whatever Operating System you are on:
- - [Mac](https://docs.docker.com/desktop/setup/install/mac-install/)
- - [Windows](https://docs.docker.com/desktop/setup/install/windows-install/)
- - [Linux](https://docs.docker.com/desktop/setup/install/linux/)
+### 1. Complete Prerequisites
 
-Once it is installed make sure Docker Desktop is running.
-   
-2. Setup Google Cloud credentials for local development
+Before starting, complete the setup steps in [PREREQUISITES.md](PREREQUISITES.md):
 
-You need to authenticate with Google Cloud on your host machine. Your entire gcloud configuration will be mounted into the dev container, allowing both infrastructure management (via `gcloud` CLI) and application code (via Application Default Credentials) to work seamlessly.
+- Install Docker Desktop on your host machine
+- Authenticate with Google Cloud (on host machine)
+- Create a GCP account
 
-**Run both of these commands on your host machine (outside the container):**
+### 2. Start Development Environment
 
 ```bash
-# Authenticate the gcloud CLI (for infrastructure operations like creating projects)
-gcloud auth login
-
-# Authenticate for application code (for Python/Node code accessing GCP APIs)
-gcloud auth application-default login
-```
-
-**Why both commands?**
-- `gcloud auth login` - Needed for running infrastructure scripts inside the dev container (like `./deploy-gcp/create-projects.sh`)
-- `gcloud auth application-default login` - Needed for your application code (Python, Node, etc.) to access GCP services
-
-Your `~/.config/gcloud` directory gets automatically mounted into the dev container, so both the `gcloud` CLI, Terraform, and your application code will work inside the container with proper authentication.
-
-**Note**: The dev container includes Terraform, gcloud CLI, and all necessary tools pre-installed. In production (Cloud Run, GKE, GCE), Workload Identity provides credentials automatically - no additional setup needed.
-
-3. Standup your local environment
-
-Build your local environment by running the following in the command line from the root of this project.
-
-```bash
+# Build and start the dev container
 docker compose build
-```
-This will take a few minutes the first time. Once that is done run
-
-```bash
 docker compose up
 ```
 
-Navigate to localhost:8080 and you should see our generic landing page!
+Navigate to http://localhost:8080 to verify the app is running.
 
-## Setup your cloud production environment
+### 3. Run Automated Setup
 
-1. Install [Terraform](https://developer.hashicorp.com/terraform/tutorials/gcp-get-started/install-cli)
-
-2. Install [gcloud CLI](https://cloud.google.com/sdk/docs/install)
-
-You'll need a [Google Cloud Platform](https://console.cloud.google.com/freetrial/) account if you don't already have one.
-
-3. Authenticate with gcloud
+Inside the dev container, run the setup script:
 
 ```bash
-gcloud auth login
+./setup.sh
 ```
 
-4. Create GCP projects for dev and prod environments
+This single command will:
+1. ✓ Verify prerequisites
+2. ✓ Create GCP projects (with generated unique IDs)
+3. ⚠ Configure Terraform (not yet implemented)
+4. ⚠ Deploy infrastructure (not yet implemented)
+5. ⚠ Set up GitHub integration (not yet implemented)
+6. ⚠ Verify deployment (not yet implemented)
 
-Run the project creation script:
+Each step is idempotent - you can safely re-run if something fails.
+
+## What Gets Configured
+
+This template sets up:
+
+**Local Development:**
+- Docker-based dev environment with all tools pre-installed
+- Mounted GCP credentials from your host machine
+- Hot-reloading Flask application on port 8080
+
+**Cloud Production:**
+- Unique GCP project with random suffix
+- Infrastructure as code using Terraform
+- (Coming soon) Cloud Run services, Cloud SQL database, networking
+
+**Agent Integration:**
+- GitHub authentication for commits, PRs, and CI/CD
+- (Coming soon) MCP for database access
+
+## Manual Setup (Alternative)
+
+If you prefer to run individual setup steps:
 
 ```bash
-./deploy-gcp/create-projects.sh
+# Verify prerequisites
+./setup/verify-prerequisites.sh
+
+# Create GCP projects
+./setup/create-projects.sh
+
+# Configure Terraform (not yet implemented)
+./setup/configure-terraform.sh
+
+# Deploy infrastructure (not yet implemented)
+./setup/deploy-infrastructure.sh
+
+# Set up GitHub integration (not yet implemented)
+./setup/setup-github-integration.sh
+
+# Verify deployment (not yet implemented)
+./setup/verify-deployment.sh
 ```
 
-This will:
-- Prompt you for your app name
-- Generate unique project IDs for dev and prod with random suffixes
-- Create both projects in your GCP account
+## Troubleshooting
 
-5. If you don't have SSH authentication setup for Github you need to do that via GITHUB_SSHE_SETUP.md
+See [PREREQUISITES.md](PREREQUISITES.md) for common issues and solutions.
 
-You'll need a Github account if you don't already have one.
-
-
-
-2.
-
-
- [Terraform](https://developer.hashicorp.com/terraform/tutorials/gcp-get-started/install-cli). If you aren't familiar with Terraform it's probably helpful to walk through the tutorials in the link above so you have a working mental model of how the different pieces of this project work together
+**Common issues:**
+- "Not authenticated with gcloud" - Run auth commands on host machine
+- "Cannot list GCP projects" - Accept GCP Terms of Service
+- Credentials not in container - Verify `~/.config/gcloud` exists on host

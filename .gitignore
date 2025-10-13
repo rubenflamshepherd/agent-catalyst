@@ -1,5 +1,6 @@
 # Custom
 .claude/settings.local.json
+.setup-config
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
