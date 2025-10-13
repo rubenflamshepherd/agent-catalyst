@@ -12,6 +12,11 @@ This template will setup:
   - Backend will be Python/Flask
   - Frontend will be node.js (or maybe vanilla JavaScript?)
 
+Integrations for agents
+- github authentications
+  - commits, prs, pushs, cicd, etc
+- mcp for database
+
 ## 
 
 I'll be outlining how to do this on MacOS using homebrew. Mainly because I believe that to be a pretty common setup for developers. However, this should be doable in other setups with minimal adaptations/changes.
