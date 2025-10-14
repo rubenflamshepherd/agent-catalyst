@@ -57,6 +57,11 @@ RUN echo 'alias gs="git status"' >> /home/devuser/.bashrc && \
     echo 'alias vamos="claude --dangerously-skip-permissions"' >> /home/devuser/.bashrc && \
     chown devuser:devuser /home/devuser/.bashrc
 
+# Install Terraform autocomplete as devuser
+USER devuser
+RUN terraform -install-autocomplete
+USER root
+
 # Set ownership and switch to non-root user
 RUN chown -R devuser:devuser /workspace
 USER devuser
