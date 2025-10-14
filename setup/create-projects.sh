@@ -13,23 +13,37 @@ NC='\033[0m' # No Color
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_FILE="$SCRIPT_DIR/../.setup-config"
 
-echo "=== GCP Project Creation ==="
-echo ""
-
 # Check for existing configuration
+OLD_APP_NAME=""
+OLD_PROD_PROJECT=""
 if [[ -f "$CONFIG_FILE" ]]; then
     source "$CONFIG_FILE"
+    OLD_APP_NAME="$APP_NAME"
+    OLD_PROD_PROJECT="$PROD_PROJECT"
 fi
 
-# Use environment variable if set, otherwise prompt
-if [[ -z "$APP_NAME" ]]; then
-    read -p "Enter app name: " APP_NAME
-fi
+# Prompt for app name with detection of existing configuration
+if [[ -n "$OLD_APP_NAME" ]]; then
+    echo "Existing app name detected: $OLD_APP_NAME"
+    read -p "Press 'y' to continue with this app name, or any other key to enter a new one: " CONTINUE
 
-# Validate input
-if [[ -z "$APP_NAME" ]]; then
-    echo -e "${RED}Error: App name cannot be empty${NC}"
-    exit 1
+    if [[ "$CONTINUE" == "y" ]]; then
+        APP_NAME="$OLD_APP_NAME"
+    else
+        read -p "Enter new app name (leave blank for default: agent-catalyst): " APP_NAME
+
+        # Use default if empty
+        if [[ -z "$APP_NAME" ]]; then
+            APP_NAME="agent-catalyst"
+        fi
+    fi
+else
+    read -p "Enter app name (leave blank for default: agent-catalyst): " APP_NAME
+
+    # Use default if empty
+    if [[ -z "$APP_NAME" ]]; then
+        APP_NAME="agent-catalyst"
+    fi
 fi
 
 # Convert to lowercase and replace spaces/underscores with hyphens
@@ -44,13 +58,41 @@ if [[ ! "$APP_NAME" =~ ^[a-z][a-z0-9-]*$ ]]; then
     exit 1
 fi
 
-# Generate or reuse random 6-character hex suffix
-if [[ -z "$SUFFIX" ]]; then
-    SUFFIX=$(openssl rand -hex 3)
+# Validate app name length
+# Project ID format: {app-name}-{8-char-suffix} = app-name + 8 chars
+# GCP requires project IDs to be 6-30 characters
+# So app name must be at least 1 char and at most 15 chars (30 - 8 - 1)
+APP_NAME_LENGTH=${#APP_NAME}
+if [[ $APP_NAME_LENGTH -lt 1 ]] || [[ $APP_NAME_LENGTH -gt 21 ]]; then
+    echo -e "${RED}Error: App name length ($APP_NAME_LENGTH) must be between 1-15 characters${NC}"
+    echo -e "${RED}(Project ID will be: ${APP_NAME}xxxxxxxx, which must be 6-30 characters)${NC}"
+    exit 1
+fi
+
+# Check if app name changed - if so, generate new suffix and warn about old project
+if [[ -n "$OLD_APP_NAME" ]] && [[ "$APP_NAME" != "$OLD_APP_NAME" ]]; then
+    echo ""
+    echo -e "${YELLOW}Warning: App name changed from '$OLD_APP_NAME' to '$APP_NAME'${NC}"
+
+    # Check if old project exists in GCP
+    if [[ -n "$OLD_PROD_PROJECT" ]] && gcloud projects describe "$OLD_PROD_PROJECT" &> /dev/null; then
+        echo -e "${YELLOW}Warning: Previous project '$OLD_PROD_PROJECT' still exists in GCP${NC}"
+        echo -e "${YELLOW}You may want to delete it to avoid confusion and billing charges:${NC}"
+        echo -e "  gcloud projects delete $OLD_PROD_PROJECT"
+    fi
+
+    echo ""
+    # Generate new suffix for new app name
+    SUFFIX=$(openssl rand -hex 4)
+else
+    # Generate or reuse random 8-character hex suffix
+    if [[ -z "$SUFFIX" ]]; then
+        SUFFIX=$(openssl rand -hex 4)
+    fi
 fi
 
 # Create project IDs
-PROD_PROJECT="${APP_NAME}-prod-${SUFFIX}"
+PROD_PROJECT="${APP_NAME}-${SUFFIX}"
 
 # Validate project ID lengths
 
@@ -60,8 +102,7 @@ if [[ ${#PROD_PROJECT} -lt 6 ]] || [[ ${#PROD_PROJECT} -gt 30 ]]; then
 fi
 
 echo ""
-echo "Generated project IDs:"
-echo -e "  ${GREEN}Prod:${NC} $PROD_PROJECT"
+echo -e "Generated project ID: ${GREEN}$PROD_PROJECT${NC}"
 echo ""
 
 # Check if gcloud is installed
@@ -78,34 +119,42 @@ if ! gcloud auth list --filter=status:ACTIVE --format="value(account)" &> /dev/n
     exit 1
 fi
 
-# Confirm before creating
-read -p "Create these projects now? (y/n): " CREATE
-
-if [[ "$CREATE" != "y" ]]; then
-    echo "Project creation cancelled."
-    echo ""
-    echo "To create these projects later, run:"
-    echo "  gcloud projects create $PROD_PROJECT --name=\"$APP_NAME Production\""
-    exit 0
-fi
-
-echo ""
-
 # Check if project already exists (idempotency)
+echo "Checking if project exists in GCP..."
 if gcloud projects describe "$PROD_PROJECT" &> /dev/null; then
-    echo -e "${GREEN}✓ Prod project already exists: $PROD_PROJECT${NC}"
+    echo -e "${GREEN}✓ Project already exists${NC}"
 else
-    echo "Creating projects..."
+    echo "Project does not exist"
+    echo ""
+
+    # Confirm before creating
+    read -p "Create this project now? (y/n): " CREATE
+
+    if [[ "$CREATE" != "y" ]]; then
+        echo ""
+        echo "Project creation cancelled."
+        echo ""
+        echo "To create this project later, run:"
+        echo "  gcloud projects create $PROD_PROJECT --name=\"$APP_NAME\""
+        exit 0
+    fi
+
+    echo ""
+    echo "Creating project in GCP..."
+    echo ""
 
     # Create prod project
-    echo -e "${YELLOW}Creating prod project...${NC}"
-    if gcloud projects create "$PROD_PROJECT" --name="$APP_NAME Production" --quiet; then
-        echo -e "${GREEN}✓ Prod project created: $PROD_PROJECT${NC}"
+    if gcloud projects create "$PROD_PROJECT" --name="$APP_NAME" --quiet; then
+        echo ""
+        echo -e "${GREEN}✓ Project created successfully${NC}"
     else
-        echo -e "${RED}✗ Failed to create prod project${NC}"
+        echo ""
+        echo -e "${RED}✗ Failed to create project${NC}"
         exit 1
     fi
 fi
+
+echo ""
 
 # Save configuration for other scripts
 cat > "$CONFIG_FILE" << EOF
@@ -115,7 +164,4 @@ export SUFFIX="$SUFFIX"
 export PROD_PROJECT="$PROD_PROJECT"
 EOF
 
-echo ""
 echo -e "${GREEN}✓ Configuration saved${NC}"
-echo ""
-echo "Project ID: $PROD_PROJECT"
