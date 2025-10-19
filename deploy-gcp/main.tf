@@ -7,8 +7,18 @@ terraform {
   }
 }
 
+variable "project_id" {
+  description = "GCP project ID"
+  type        = string
+}
+
+variable "app_name" {
+  description = "Application name"
+  type        = string
+}
+
 provider "google" {
-  project = "<PROJECT_ID>"
+  project = var.project_id
   region  = "us-central1"
   zone    = "us-central1-c"
 }

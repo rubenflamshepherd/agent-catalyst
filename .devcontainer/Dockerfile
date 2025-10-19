@@ -8,8 +8,9 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Claude Code globally
-RUN npm install -g @anthropic-ai/claude-code
+# Install LLMs globally
+RUN npm i -g @anthropic-ai/claude-code
+RUN npm i -g @openai/codex
 
 # Install Google Cloud CLI
 RUN apt-get update && \

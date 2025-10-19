@@ -116,6 +116,8 @@ I am using a voice-to-text tool to dictate my responses to Claude Code. Please b
 
 ## Docker and Dev Containers
 
+You are either running inside or outside a Docker container. If you are asked to work with Docker check to make sure you are outside the container via `ls -l /.dockerenv`. If you aren't, stop and flag this to me. If you are, use the below commands/rules as a starting point:
+
 - When modifying the dev container or Dockerfile, YOU MUST build and run the container to verify changes work correctly.
 - YOU MUST shut down test containers when you're done with them.
 - Use these commands to test dev container changes:
