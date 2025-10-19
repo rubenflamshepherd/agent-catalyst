@@ -8,8 +8,9 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Claude Code globally
-RUN npm install -g @anthropic-ai/claude-code
+# Install LLMs globally
+RUN npm i -g @anthropic-ai/claude-code
+RUN npm i -g @openai/codex
 
 # Install Google Cloud CLI
 RUN apt-get update && \
@@ -56,6 +57,11 @@ RUN echo 'alias gs="git status"' >> /home/devuser/.bashrc && \
     echo 'alias gd="git diff"' >> /home/devuser/.bashrc && \
     echo 'alias vamos="claude --dangerously-skip-permissions"' >> /home/devuser/.bashrc && \
     chown devuser:devuser /home/devuser/.bashrc
+
+# Install Terraform autocomplete as devuser
+USER devuser
+RUN terraform -install-autocomplete
+USER root
 
 # Set ownership and switch to non-root user
 RUN chown -R devuser:devuser /workspace

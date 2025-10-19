@@ -1,6 +1,13 @@
 # Custom
 .claude/settings.local.json
 .setup-config
+docs/*
+
+# Terraform
+deploy-gcp/.terraform/
+deploy-gcp/terraform.tfvars
+deploy-gcp/*.tfstate
+deploy-gcp/*.tfstate.backup
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

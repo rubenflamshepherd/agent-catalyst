@@ -1,6 +1,6 @@
 #!/bin/bash
 # ABOUTME: Verifies that all prerequisites are met before running setup.
-# ABOUTME: Checks for gcloud authentication and application default credentials.
+# ABOUTME: Checks for CLI tools (gcloud, terraform, gh) and authentication.
 
 set -e
 
@@ -23,6 +23,17 @@ if ! command -v gcloud &> /dev/null; then
     ERRORS=$((ERRORS + 1))
 else
     echo -e "${GREEN}✓${NC}"
+fi
+
+# Check if terraform is installed
+echo -n "Checking Terraform CLI... "
+if ! command -v terraform &> /dev/null; then
+    echo -e "${RED}✗${NC}"
+    echo -e "${RED}Error: Terraform is not installed in this container${NC}"
+    ERRORS=$((ERRORS + 1))
+else
+    TERRAFORM_VERSION=$(terraform version -json 2>/dev/null | grep -o '"terraform_version":"[^"]*"' | cut -d'"' -f4 || echo "unknown")
+    echo -e "${GREEN}✓${NC} ($TERRAFORM_VERSION)"
 fi
 
 # Check if user is authenticated with gcloud
