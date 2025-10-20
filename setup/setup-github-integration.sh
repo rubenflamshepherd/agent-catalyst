@@ -220,7 +220,7 @@ fi
 
 NEEDS_PROTECTION_UPDATE=true
 if [[ "$BRANCH_PROTECTED" == true ]]; then
-    PROTECTION_CHECK_OUTPUT="$(python - "$PROTECTION_JSON_FILE" <<'PY'
+    if PROTECTION_CHECK_OUTPUT="$(python - "$PROTECTION_JSON_FILE" <<'PY'
 import json
 import sys
 
@@ -245,11 +245,8 @@ if not enforce_admins:
     reasons.append("Admins can bypass protections.")
 
 reviews = current.get("required_pull_request_reviews")
-if not reviews:
-    reasons.append("Pull request reviews not required.")
-else:
-    if reviews.get("required_approving_review_count", 0) < 1:
-        reasons.append("Insufficient approving review requirement.")
+if reviews and reviews.get("required_approving_review_count", 0) > 0:
+    reasons.append("Pull request review requirement present.")
 
 allow_force_pushes = current.get("allow_force_pushes", {}).get("enabled", False)
 if allow_force_pushes:
@@ -265,8 +262,7 @@ if reasons:
 else:
     sys.exit(0)
 PY
-)"
-    if [[ $? -eq 0 ]]; then
+)"; then
         NEEDS_PROTECTION_UPDATE=false
     else
         echo "Branch protection drift detected:"
@@ -284,9 +280,7 @@ if [[ "$NEEDS_PROTECTION_UPDATE" == true ]]; then
     "contexts": ["Cloud Build"]
   },
   "enforce_admins": true,
-  "required_pull_request_reviews": {
-    "required_approving_review_count": 1
-  },
+  "required_pull_request_reviews": null,
   "restrictions": null,
   "allow_force_pushes": false,
   "allow_deletions": false
