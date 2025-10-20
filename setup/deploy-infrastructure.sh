@@ -57,12 +57,31 @@ if [[ ! -f "$TFVARS_FILE" ]]; then
     exit 1
 fi
 
-if ! grep -q "project_id = \"$PROD_PROJECT\"" "$TFVARS_FILE"; then
+if ! grep -Eq "project_id[[:space:]]*=[[:space:]]*\"$PROD_PROJECT\"" "$TFVARS_FILE"; then
     echo -e "${RED}Error: terraform.tfvars project_id does not match configured project${NC}"
     echo "Expected project_id \"$PROD_PROJECT\"."
     echo "Run ./setup/configure-terraform.sh to regenerate Terraform configuration."
     exit 1
 fi
+
+REPO_ROOT="$SCRIPT_DIR/.."
+REMOTE_URL=$(git -C "$REPO_ROOT" remote get-url origin 2>/dev/null || true)
+
+GITHUB_OWNER=""
+GITHUB_REPO=""
+
+if [[ -n "$REMOTE_URL" ]]; then
+    if [[ "$REMOTE_URL" =~ ^git@github\.com:([^/]+)/([^/]+)(\.git)?$ ]]; then
+        GITHUB_OWNER="${BASH_REMATCH[1]}"
+        GITHUB_REPO="${BASH_REMATCH[2]}"
+    elif [[ "$REMOTE_URL" =~ ^https://github\.com/([^/]+)/([^/]+)(\.git)?$ ]]; then
+        GITHUB_OWNER="${BASH_REMATCH[1]}"
+        GITHUB_REPO="${BASH_REMATCH[2]}"
+    fi
+    GITHUB_REPO="${GITHUB_REPO%.git}"
+fi
+
+REPO_DISPLAY="${GITHUB_OWNER:-<github-owner>}/${GITHUB_REPO:-<github-repo>}"
 
 echo "✓ Configuration verified"
 echo ""
@@ -91,7 +110,7 @@ echo ""
 
 echo "Running terraform plan..."
 PLAN_LOG=$(mktemp)
-if run_terraform plan -input=false -var-file=terraform.tfvars | tee "$PLAN_LOG"; then
+if run_terraform plan -input=false -var-file=terraform.tfvars 2>&1 | tee "$PLAN_LOG"; then
     echo "✓ Plan completed"
 else
     echo -e "${RED}Error: terraform plan failed${NC}"
@@ -105,12 +124,27 @@ echo ""
 
 echo "Applying infrastructure changes..."
 APPLY_LOG=$(mktemp)
-if run_terraform apply -input=false -auto-approve -var-file=terraform.tfvars | tee "$APPLY_LOG"; then
+if run_terraform apply -input=false -auto-approve -var-file=terraform.tfvars 2>&1 | tee "$APPLY_LOG"; then
     echo "✓ Infrastructure deployed"
 else
     echo -e "${RED}Error: terraform apply failed${NC}"
     echo ""
     cat "$APPLY_LOG"
+
+    if grep -Eq "Error creating Trigger|invalid argument" "$APPLY_LOG"; then
+        echo ""
+        echo -e "${YELLOW}Cloud Build trigger creation failed.${NC}"
+        echo "Cloud Build must be connected to the GitHub repository before Terraform can manage triggers."
+        echo ""
+        echo "Connect the repository by following these steps:"
+        echo "  1. Visit: https://console.cloud.google.com/cloud-build/triggers?project=$PROD_PROJECT"
+        echo "  2. Click \"Manage repositories\" (or \"Connect repository\")"
+        echo "  3. Choose \"GitHub (Cloud Build GitHub App)\" and authorize the app"
+        echo "  4. Select the repository $REPO_DISPLAY and confirm"
+        echo ""
+        echo "After the connection is established, re-run ./setup/deploy-infrastructure.sh."
+    fi
+
     echo ""
     echo "Investigate the issue above. Partial resources may exist."
     rm -f "$APPLY_LOG"
