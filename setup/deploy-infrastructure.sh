@@ -14,9 +14,6 @@ NC='\033[0m' # No Color
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_FILE="$SCRIPT_DIR/../.setup-config"
 
-echo "=== Infrastructure Deployment ==="
-echo ""
-
 # Load configuration
 if [[ ! -f "$CONFIG_FILE" ]]; then
     echo -e "${RED}Error: Configuration file not found${NC}"
