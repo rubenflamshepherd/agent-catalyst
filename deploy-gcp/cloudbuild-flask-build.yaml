@@ -2,7 +2,7 @@
 # ABOUTME: Ensures Docker builds succeed without deploying changes to Cloud Run.
 steps:
   - name: 'python:3.11-slim'
-    entrypoint: 'bash'
+    entrypoint: '/bin/sh'
     args:
       - '-c'
       - |
