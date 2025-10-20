@@ -22,6 +22,9 @@ if [[ -f "$CONFIG_FILE" ]]; then
     OLD_PROD_PROJECT="$PROD_PROJECT"
 fi
 
+echo "=== Create Project ==="
+echo ""
+
 # Prompt for app name with detection of existing configuration
 if [[ -n "$OLD_APP_NAME" ]]; then
     echo "Existing app name detected: $OLD_APP_NAME"
