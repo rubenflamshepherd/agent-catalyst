@@ -1,0 +1,27 @@
+# ABOUTME: Validates pull requests by running tests and building the Flask image.
+# ABOUTME: Ensures Docker builds succeed without deploying changes to Cloud Run.
+steps:
+  - name: 'python:3.11-slim'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        set -u
+        pip install --no-cache-dir -r app/requirements.txt
+        status=0
+        pytest || status=$?
+        if [ "$status" -eq 5 ]; then
+          echo "pytest reported no tests; treating as success."
+          status=0
+        fi
+        exit "$status"
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'pr-validation'
+      - './app'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
