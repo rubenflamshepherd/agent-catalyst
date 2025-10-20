@@ -7,7 +7,7 @@ steps:
       - '-c'
       - |
         set -u
-        pip install --no-cache-dir -r app/requirements.txt
+        python -m pip install --no-cache-dir -r app/requirements.txt
         status=0
         pytest || status=$?
         if [ "$status" -eq 5 ]; then

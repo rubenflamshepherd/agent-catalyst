@@ -147,6 +147,7 @@ resource "google_service_account_iam_member" "cloud_build_impersonation" {
 
 resource "google_project_iam_member" "build_service_account_roles" {
   for_each = toset([
+    "roles/logging.logWriter",
     "roles/artifactregistry.writer",
     "roles/run.admin",
   ])
