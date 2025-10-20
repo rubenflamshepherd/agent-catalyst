@@ -112,7 +112,7 @@ When asked to do something, just do it - including obvious follow-up actions nee
 
 ## Voice-to-Text Context
 
-I am using a voice-to-text tool to dictate my responses to you. Please be aware that:
+I am using a voice-to-text tool to dictate my messages to you. Please be aware that:
 
 - The word "sequel" may be used to represent "SQL" or "Structured Query Language"
 - Other voice-to-text transcription errors may occur in my messages
