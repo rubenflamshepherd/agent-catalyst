@@ -208,6 +208,7 @@ resource "google_cloudbuild_trigger" "pr_validation" {
 
   description = "Validate pull requests targeting main for ${var.app_name}"
   filename    = "deploy-gcp/cloudbuild-flask-build.yaml"
+  service_account = "projects/${var.project_id}/serviceAccounts/${local.cloud_build_account}"
   location    = "global"
 
   github {
@@ -227,6 +228,7 @@ resource "google_cloudbuild_trigger" "deploy_main" {
   description = "Build and deploy ${var.app_name} on pushes to main"
   filename    = "deploy-gcp/cloudbuild-flask.yaml"
   location    = "global"
+  service_account = "projects/${var.project_id}/serviceAccounts/${local.cloud_build_account}"
 
   github {
     owner = var.github_owner
