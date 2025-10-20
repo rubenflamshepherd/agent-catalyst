@@ -197,6 +197,8 @@ fi
 success "$TRIGGER_CHECK_OUTPUT"
 echo ""
 
+PR_STATUS_CONTEXT="${APP_SLUG}-pr-validate (${PROD_PROJECT})"
+
 echo "Enforcing branch protection on '$DEFAULT_BRANCH'..."
 PROTECTION_JSON_FILE="$(mktemp)"
 PROTECTION_ERR_FILE="$(mktemp)"
@@ -217,14 +219,15 @@ fi
 
 NEEDS_PROTECTION_UPDATE=true
 if [[ "$BRANCH_PROTECTED" == true ]]; then
-    if PROTECTION_CHECK_OUTPUT="$(python - "$PROTECTION_JSON_FILE" <<'PY'
+    if PROTECTION_CHECK_OUTPUT="$(PR_STATUS_CONTEXT="$PR_STATUS_CONTEXT" python - "$PROTECTION_JSON_FILE" <<'PY'
 import json
 import sys
+import os
 
 with open(sys.argv[1], "r", encoding="utf-8") as handle:
     current = json.load(handle)
 
-desired_contexts = ["Cloud Build"]
+desired_contexts = [os.environ["PR_STATUS_CONTEXT"]]
 reasons = []
 
 status_checks = current.get("required_status_checks")
@@ -274,7 +277,7 @@ if [[ "$NEEDS_PROTECTION_UPDATE" == true ]]; then
 {
   "required_status_checks": {
     "strict": false,
-    "contexts": ["Cloud Build"]
+    "contexts": ["$PR_STATUS_CONTEXT"]
   },
   "enforce_admins": true,
   "required_pull_request_reviews": null,
