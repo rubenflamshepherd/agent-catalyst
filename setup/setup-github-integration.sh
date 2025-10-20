@@ -28,9 +28,6 @@ success() {
     echo -e "${GREEN}$1${NC}"
 }
 
-echo "=== GitHub Integration ==="
-echo ""
-
 if [[ ! -f "$CONFIG_FILE" ]]; then
     fail "Configuration file not found. Run ./setup.sh to generate configuration."
 fi
