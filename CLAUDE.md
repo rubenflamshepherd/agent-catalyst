@@ -98,13 +98,14 @@ When asked to do something, just do it - including obvious follow-up actions nee
 
 ## Version Control
 
-- If the project isn't in a git repo, STOP and ask permission to initialize one.
-- YOU MUST STOP and ask how to handle uncommitted changes or untracked files when starting work.  Suggest committing existing work first.
-- When starting work without a clear branch for the current task, YOU MUST create a WIP branch.
+- When beginning work, always run `git status` to see the state of the directoy.
+- If we are in main, checkout a new branch via `git checkout -b <new-branch-name-MMDD>`
+  - Use this naming format: `[2-4 lower-case descriptive words separated by dashes ]-[MMDD]`. E.g., `fix-sqlfluff-errors-1214` (December 14th)
+- If there are pre-existing changes run `git diff` to examine the changes and then commit with a relevant message. Ask if there are pre-existing untracked files.
 - YOU MUST TRACK All non-trivial changes in git.
-- YOU MUST commit frequently throughout the development process, even if your high-level tasks are not yet done. Commit your journal entries.
-- NEVER SKIP, EVADE OR DISABLE A PRE-COMMIT HOOK
-- NEVER use `git add -A` unless you've just done a `git status` - Don't add random test files to the repo.
+- YOU MUST commit frequently throughout the development process, even if your high-level tasks are not yet done.
+- NEVER use `git add -A` unless you've just done a `git status`
+- Don't add random test files to the repo.
 
 ## Voice-to-Text Context
 
