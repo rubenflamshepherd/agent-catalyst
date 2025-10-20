@@ -41,18 +41,22 @@ variable "github_repo" {
 }
 
 locals {
-  region                        = "us-central1"
-  app_slug_candidate            = trim(join("-", regexall("[a-z0-9]+", lower(var.app_name))), "-")
-  app_slug                      = length(local.app_slug_candidate) > 0 ? local.app_slug_candidate : "app"
-  artifact_repo                 = "${local.app_slug}-services"
-  run_service_account_base      = "${local.app_slug}-run-sa"
-  run_service_account_candidate = trim(join("-", regexall("[a-z0-9]+", local.run_service_account_base)), "-")
-  run_service_account_value     = length(local.run_service_account_candidate) > 0 ? local.run_service_account_candidate : "run-sa"
-  run_service_account           = trim(substr(local.run_service_account_value, 0, 30), "-")
-  cloud_build_account           = "${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
-  serverless_robot_sa           = "service-${data.google_project.project.number}@serverless-robot-prod.iam.gserviceaccount.com"
-  artifact_repo_path            = "us-central1-docker.pkg.dev/${var.project_id}/${local.artifact_repo}"
-  cloud_run_placeholder_image   = "gcr.io/cloudrun/hello"
+  region                          = "us-central1"
+  app_slug_candidate              = trim(join("-", regexall("[a-z0-9]+", lower(var.app_name))), "-")
+  app_slug                        = length(local.app_slug_candidate) > 0 ? local.app_slug_candidate : "app"
+  artifact_repo                   = "${local.app_slug}-services"
+  run_service_account_base        = "${local.app_slug}-run-sa"
+  run_service_account_candidate   = trim(join("-", regexall("[a-z0-9]+", local.run_service_account_base)), "-")
+  run_service_account_value       = length(local.run_service_account_candidate) > 0 ? local.run_service_account_candidate : "run-sa"
+  run_service_account             = trim(substr(local.run_service_account_value, 0, 30), "-")
+  build_service_account_base      = "${local.app_slug}-build-sa"
+  build_service_account_candidate = trim(join("-", regexall("[a-z0-9]+", local.build_service_account_base)), "-")
+  build_service_account_value     = length(local.build_service_account_candidate) > 0 ? local.build_service_account_candidate : "build-sa"
+  build_service_account           = trim(substr(local.build_service_account_value, 0, 30), "-")
+  cloud_build_account             = "${data.google_project.project.number}@cloudbuild.gserviceaccount.com"
+  serverless_robot_sa             = "service-${data.google_project.project.number}@serverless-robot-prod.iam.gserviceaccount.com"
+  artifact_repo_path              = "us-central1-docker.pkg.dev/${var.project_id}/${local.artifact_repo}"
+  cloud_run_placeholder_image     = "gcr.io/cloudrun/hello"
 }
 
 provider "google" {
@@ -103,6 +107,12 @@ resource "google_service_account" "run" {
   display_name = "${var.app_name} Cloud Run runtime service account"
 }
 
+resource "google_service_account" "build" {
+  project      = var.project_id
+  account_id   = local.build_service_account
+  display_name = "${var.app_name} Cloud Build execution service account"
+}
+
 resource "google_project_iam_member" "run_service_account_roles" {
   for_each = toset([
     "roles/logging.logWriter",
@@ -133,6 +143,33 @@ resource "google_service_account_iam_member" "cloud_build_impersonation" {
   member             = "serviceAccount:${local.cloud_build_account}"
 
   depends_on = [google_project_service.required["cloudbuild.googleapis.com"]]
+}
+
+resource "google_project_iam_member" "build_service_account_roles" {
+  for_each = toset([
+    "roles/artifactregistry.writer",
+    "roles/run.admin",
+  ])
+
+  project = var.project_id
+  role    = each.value
+  member  = "serviceAccount:${google_service_account.build.email}"
+
+  depends_on = [google_project_service.required["cloudbuild.googleapis.com"]]
+}
+
+resource "google_service_account_iam_member" "build_sa_impersonation" {
+  service_account_id = google_service_account.build.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${local.cloud_build_account}"
+
+  depends_on = [google_project_service.required["cloudbuild.googleapis.com"]]
+}
+
+resource "google_service_account_iam_member" "build_sa_run_service_account_user" {
+  service_account_id = google_service_account.run.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:${google_service_account.build.email}"
 }
 
 resource "google_artifact_registry_repository_iam_member" "cloud_run_runtime_access" {
@@ -206,10 +243,10 @@ resource "google_cloud_run_service_iam_member" "public_invoker" {
 resource "google_cloudbuild_trigger" "pr_validation" {
   name = "${local.app_slug}-pr-validate"
 
-  description = "Validate pull requests targeting main for ${var.app_name}"
-  filename    = "deploy-gcp/cloudbuild-flask-build.yaml"
-  location    = "global"
-  service_account = "projects/${var.project_id}/serviceAccounts/${local.cloud_build_account}"
+  description     = "Validate pull requests targeting main for ${var.app_name}"
+  filename        = "deploy-gcp/cloudbuild-flask-build.yaml"
+  location        = "global"
+  service_account = "projects/${var.project_id}/serviceAccounts/${google_service_account.build.email}"
 
   github {
     owner = var.github_owner
@@ -224,11 +261,11 @@ resource "google_cloudbuild_trigger" "pr_validation" {
 }
 
 resource "google_cloudbuild_trigger" "deploy_main" {
-  name        = "${local.app_slug}-deploy"
-  description = "Build and deploy ${var.app_name} on pushes to main"
-  filename    = "deploy-gcp/cloudbuild-flask.yaml"
-  location    = "global"
-  service_account = "projects/${var.project_id}/serviceAccounts/${local.cloud_build_account}"
+  name            = "${local.app_slug}-deploy"
+  description     = "Build and deploy ${var.app_name} on pushes to main"
+  filename        = "deploy-gcp/cloudbuild-flask.yaml"
+  location        = "global"
+  service_account = "projects/${var.project_id}/serviceAccounts/${google_service_account.build.email}"
 
   github {
     owner = var.github_owner
