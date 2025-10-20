@@ -2,14 +2,15 @@
 # ABOUTME: Ensures Docker builds succeed without deploying changes to Cloud Run.
 steps:
   - name: 'python:3.11-slim'
-    entrypoint: 'bash'
+    entrypoint: '/bin/sh'
     args:
       - '-c'
       - |
         set -u
-        pip install --no-cache-dir -r app/requirements.txt
+        python -m pip install --no-cache-dir -r app/requirements.txt
+        python -m pip install --no-cache-dir pytest
         status=0
-        pytest || status=$?
+        python -m pytest || status=$?
         if [ "$status" -eq 5 ]; then
           echo "pytest reported no tests; treating as success."
           status=0

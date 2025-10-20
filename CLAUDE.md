@@ -101,6 +101,7 @@ When asked to do something, just do it - including obvious follow-up actions nee
 - When beginning work, always run `git status` to see the state of the directoy.
 - If we are in main, checkout a new branch via `git checkout -b <new-branch-name-MMDD>`
   - Use this naming format: `[2-4 lower-case descriptive words separated by dashes ]-[MMDD]`. E.g., `fix-sqlfluff-errors-1214` (December 14th)
+  - YOU MUST always choose the branch name yourself based on the changes being made. Never ask Ruben for the branch name.
 - If there are pre-existing changes run `git diff` to examine the changes and then commit with a relevant message. Ask if there are pre-existing untracked files.
 - YOU MUST TRACK All non-trivial changes in git.
 - YOU MUST commit frequently throughout the development process, even if your high-level tasks are not yet done.
