@@ -206,8 +206,10 @@ resource "google_cloud_run_service_iam_member" "public_invoker" {
 resource "google_cloudbuild_trigger" "pr_validation" {
   name = "${local.app_slug}-pr-validate"
 
-  description = "Validate pull requests targeting main for ${var.app_name}"
-  filename    = "deploy-gcp/cloudbuild-flask-build.yaml"
+  description     = "Validate pull requests targeting main for ${var.app_name}"
+  filename        = "deploy-gcp/cloudbuild-flask-build.yaml"
+  location        = "global"
+  service_account = "projects/${var.project_id}/serviceAccounts/${local.cloud_build_account}"
 
   github {
     owner = var.github_owner
@@ -222,9 +224,11 @@ resource "google_cloudbuild_trigger" "pr_validation" {
 }
 
 resource "google_cloudbuild_trigger" "deploy_main" {
-  name        = "${local.app_slug}-deploy"
-  description = "Build and deploy ${var.app_name} on pushes to main"
-  filename    = "deploy-gcp/cloudbuild-flask.yaml"
+  name            = "${local.app_slug}-deploy"
+  description     = "Build and deploy ${var.app_name} on pushes to main"
+  filename        = "deploy-gcp/cloudbuild-flask.yaml"
+  location        = "global"
+  service_account = "projects/${var.project_id}/serviceAccounts/${local.cloud_build_account}"
 
   github {
     owner = var.github_owner
