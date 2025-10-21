@@ -45,7 +45,7 @@ RUN useradd -m -s /bin/bash -u 1000 devuser && \
 WORKDIR /workspace
 
 COPY app/requirements.txt app/requirements-dev.txt ./app/
-RUN pip install --no-cache-dir -r app/requirements.txt
+RUN pip install --no-cache-dir -r app/requirements.txt -r app/requirements-dev.txt
 
 # Create gcloud config directory for devuser
 RUN mkdir -p /home/devuser/.config/gcloud && \
@@ -66,5 +66,3 @@ USER root
 # Set ownership and switch to non-root user
 RUN chown -R devuser:devuser /workspace
 USER devuser
-
-RUN python -m pip install --user --no-cache-dir -r /workspace/app/requirements-dev.txt
