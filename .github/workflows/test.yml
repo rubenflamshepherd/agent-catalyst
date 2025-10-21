@@ -30,34 +30,34 @@ jobs:
       - name: Install Black
         run: |
           BLACK_VERSION=$(python - <<'PY'
-import pathlib
+            import pathlib
 
-config_path = pathlib.Path(".pre-commit-config.yaml")
-config_text = config_path.read_text()
-lines = config_text.splitlines()
-repo_index = None
-for idx, line in enumerate(lines):
-    if "https://github.com/psf/black" in line:
-        repo_index = idx
-        break
+            config_path = pathlib.Path(".pre-commit-config.yaml")
+            config_text = config_path.read_text()
+            lines = config_text.splitlines()
+            repo_index = None
+            for idx, line in enumerate(lines):
+                if "https://github.com/psf/black" in line:
+                    repo_index = idx
+                    break
 
-if repo_index is None:
-    raise SystemExit("Black repo block not found in .pre-commit-config.yaml")
+            if repo_index is None:
+                raise SystemExit("Black repo block not found in .pre-commit-config.yaml")
 
-version = None
-for line in lines[repo_index + 1:]:
-    stripped = line.strip()
-    if stripped.startswith("rev:"):
-        raw_version = stripped.split(":", 1)[1].strip()
-        version = raw_version.strip('"').strip("'")
-        break
-    if stripped.startswith("repo:"):
-        break
+            version = None
+            for line in lines[repo_index + 1:]:
+                stripped = line.strip()
+                if stripped.startswith("rev:"):
+                    raw_version = stripped.split(":", 1)[1].strip()
+                    version = raw_version.strip('"').strip("'")
+                    break
+                if stripped.startswith("repo:"):
+                    break
 
-if not version:
-    raise SystemExit("Black rev not found in .pre-commit-config.yaml")
+            if not version:
+                raise SystemExit("Black rev not found in .pre-commit-config.yaml")
 
-print(version)
+            print(version)
 PY
           )
           pip install "black==${BLACK_VERSION}"
