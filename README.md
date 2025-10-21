@@ -61,7 +61,7 @@ Each step is idempotent - you can safely re-run if something fails.
 
 ## Development
 
-Install Python dependencies manually when running outside the dev container:
+Testing locally is run from inside the dev container. When running outside it, install dependencies manually:
 
 ```bash
 pip install -r app/requirements.txt -r app/requirements-dev.txt
@@ -70,18 +70,26 @@ pip install -r app/requirements.txt -r app/requirements-dev.txt
 Run the full test suite:
 
 ```bash
-cd app && PYTHONWARNINGS=error pytest
+make test
 ```
 
 Run tests with coverage reporting:
 
 ```bash
-cd app && PYTHONWARNINGS=error pytest --cov=webapp --cov-report=term-missing
+make test-coverage
 ```
 
 Run a specific test:
 
 ```bash
+make test-target TARGET=tests/test_routes.py::test_homepage
+```
+
+If `make` is unavailable, run the underlying commands directly from `/workspace/app`:
+
+```bash
+cd app && PYTHONWARNINGS=error pytest
+cd app && PYTHONWARNINGS=error pytest --cov=webapp --cov-report=term-missing
 cd app && PYTHONWARNINGS=error pytest tests/test_routes.py::test_homepage
 ```
 
