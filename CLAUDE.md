@@ -109,6 +109,7 @@ When asked to do something, just do it - including obvious follow-up actions nee
 - YOU MUST commit frequently throughout the development process, even if your high-level tasks are not yet done.
 - NEVER use `git add -A` unless you've just done a `git status`
 - Don't add random test files to the repo.
+- Place our specification plans inside the `docs/` directory and do not add them to version control.
 
 ## Voice-to-Text Context
 
