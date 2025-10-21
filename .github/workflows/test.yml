@@ -29,37 +29,23 @@ jobs:
 
       - name: Install Black
         run: |
-          BLACK_VERSION=$(python - <<'PY'
-            import pathlib
-
-            config_path = pathlib.Path(".pre-commit-config.yaml")
-            config_text = config_path.read_text()
-            lines = config_text.splitlines()
-            repo_index = None
-            for idx, line in enumerate(lines):
-                if "https://github.com/psf/black" in line:
-                    repo_index = idx
-                    break
-
-            if repo_index is None:
-                raise SystemExit("Black repo block not found in .pre-commit-config.yaml")
-
-            version = None
-            for line in lines[repo_index + 1:]:
-                stripped = line.strip()
-                if stripped.startswith("rev:"):
-                    raw_version = stripped.split(":", 1)[1].strip()
-                    version = raw_version.strip('"').strip("'")
-                    break
-                if stripped.startswith("repo:"):
-                    break
-
-            if not version:
-                raise SystemExit("Black rev not found in .pre-commit-config.yaml")
-
-            print(version)
-PY
-          )
+          BLACK_VERSION=$(python -c "import pathlib, sys
+          lines = pathlib.Path('.pre-commit-config.yaml').read_text().splitlines()
+          repo_index = next((i for i, line in enumerate(lines) if 'https://github.com/psf/black' in line), -1)
+          if repo_index == -1:
+              sys.exit('Black repo block not found in .pre-commit-config.yaml')
+          version = None
+          for line in lines[repo_index + 1:]:
+              stripped = line.strip()
+              if stripped.startswith('rev:'):
+                  raw = stripped.split(':', 1)[1].strip()
+                  version = raw.replace('\"', '').replace(\"'\", '')
+                  break
+              if stripped.startswith('repo:'):
+                  break
+          if not version:
+              sys.exit('Black rev not found in .pre-commit-config.yaml')
+          print(version)")
           pip install "black==${BLACK_VERSION}"
 
       - name: Check formatting
