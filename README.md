@@ -61,7 +61,7 @@ Each step is idempotent - you can safely re-run if something fails.
 
 ## Development
 
-Testing locally is run from inside the dev container. When running outside it, install dependencies manually:
+Testing locally is run from inside the dev container. When running outside of the dev container, install dependencies manually:
 
 ```bash
 pip install -r app/requirements.txt -r app/requirements-dev.txt
