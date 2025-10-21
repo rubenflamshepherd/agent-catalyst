@@ -186,4 +186,4 @@ YOU MUST follow this debugging framework for ANY technical issue:
 
 ## Current Project
 
-This repository is a bootstrapping solution for developers to quickly set up both local development and production cloud environments. It serves as a template that other developers can copy and use with minimal configuration effort. The web application itself is intentionally minimal, featuring only a default landing screen - the focus is on providing a solid infrastructure foundation rather than application functionality.
+This repository is a bootstrapping solution for developers to quickly set up both local development and production cloud environments. It serves as a template that other developers can copy and use with minimal configuration effort. The web application itself is intentionally minimal, featuring only a default landing screen - the focus is on providing a solid infrastructure foundation rather than application functionality. See the [README.md](README.md) for more details.

@@ -1,5 +1,25 @@
 # agent-catalyst
-Bootstrap a basic project with prod and dev environments to enable agents to build out the differing functionality
+
+Agent Catalyst is a batteries-included framework for you to stand up a basic app upon which you can then build out your app (agentically or otherwise)!
+
+It includes a basic scaffold for:
+
+- local development environment
+- cloud production environment
+- automatic deployment to prod
+- CICD
+- testing
+- linting
+
+With additional integrations for agentic workflows:
+- git and gituhb
+- gcloud CLI
+- terraform
+
+You can totally use this if you just want to standup development and production environments. But I think this framework really shines when combined with agentic workflows:
+
+Agentic coding is good but non-deterministic. They can bootstrap an app's basic functionailty but this takes time, some back-and-forth with the agent, and the outcome is
+not guarenteed. Instead, bootstrap this basic functionality with Agent Catalyst and have Agents build out the actual core functionality of the app.
 
 ## Basic Pieces
 
@@ -17,19 +37,14 @@ Integrations for agents
   - commits, prs, pushs, cicd, etc
 - mcp for database
 
-## 
-
-I'll be outlining how to do this on MacOS using homebrew. Mainly because I believe that to be a pretty common setup for developers. However, this should be doable in other setups with minimal adaptations/changes.
 
 ## Quick Start
+
+I'll be outlining how to do this on MacOS using `homebrew`. Mainly because that's my own setup and I believe that to be a pretty common among developers. However, this should be doable in Operating Systems with minimal adaptations/changes. I'd also highly recommend using VSCode with the Dev Container package to build the development environment (again my setup). A `.devcontainer/Dockerfiler` is provided for this.
 
 ### 1. Complete Prerequisites
 
 Before starting, complete the setup steps in [PREREQUISITES.md](PREREQUISITES.md):
-
-- Install Docker Desktop on your host machine
-- Authenticate with Google Cloud (on host machine)
-- Create a GCP account
 
 ### 2. Start Development Environment
 
@@ -51,10 +66,10 @@ Inside the dev container, run the setup script:
 
 This single command will:
 1. ✓ Verify prerequisites
-2. ✓ Create GCP projects (with generated unique IDs)
-3. ⚠ Configure Terraform (not yet implemented)
-4. ⚠ Deploy infrastructure (not yet implemented)
-5. ⚠ Set up GitHub integration (not yet implemented)
+2. ✓ Create GCP projects
+3. ✓ Configure Terraform
+4. ✓ Deploy infrastructure
+5. ✓ Set up GitHub integration
 6. ⚠ Verify deployment (not yet implemented)
 
 Each step is idempotent - you can safely re-run if something fails.
@@ -134,6 +149,11 @@ If you prefer to run individual setup steps:
 # Verify deployment (not yet implemented)
 ./setup/verify-deployment.sh
 ```
+
+## Roadmap
+
+- database integration
+- basic user system (login, email validation, etc)
 
 ## Troubleshooting
 

@@ -4,7 +4,7 @@ Complete these steps **before** running `./setup.sh` inside the dev container.
 
 ## 1. Install Docker Desktop
 
-Docker Desktop must be installed and running on your host machine.
+Docker Desktop must be installed and running on your computer.
 
 **Installation links:**
 - [macOS](https://docs.docker.com/desktop/setup/install/mac-install/)
