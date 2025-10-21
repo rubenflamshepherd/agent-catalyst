@@ -2,7 +2,7 @@ FROM python:3.11-slim
 
 # Install Node.js and git
 RUN apt-get update && \
-    apt-get install -y curl git openssh-client sudo && \
+    apt-get install -y curl git openssh-client sudo make && \
     curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
     apt-get install -y nodejs && \
     apt-get clean && \
@@ -44,8 +44,8 @@ RUN useradd -m -s /bin/bash -u 1000 devuser && \
 
 WORKDIR /workspace
 
-COPY app/requirements.txt ./app/
-RUN pip install --no-cache-dir -r app/requirements.txt
+COPY app/requirements.txt app/requirements-dev.txt ./app/
+RUN pip install --no-cache-dir -r app/requirements.txt -r app/requirements-dev.txt
 
 # Create gcloud config directory for devuser
 RUN mkdir -p /home/devuser/.config/gcloud && \

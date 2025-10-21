@@ -59,6 +59,40 @@ This single command will:
 
 Each step is idempotent - you can safely re-run if something fails.
 
+## Development
+
+Testing locally is run from inside the dev container. When running outside of the dev container, install dependencies manually:
+
+```bash
+pip install -r app/requirements.txt -r app/requirements-dev.txt
+```
+
+Run the full test suite:
+
+```bash
+make test
+```
+
+Run tests with coverage reporting:
+
+```bash
+make test-coverage
+```
+
+Run a specific test:
+
+```bash
+make test-target TARGET=tests/test_routes.py::test_homepage
+```
+
+The `make` command is a wrapper/alias. If you want to run the tests directly run the following commands from `/workspace/app`:
+
+```bash
+cd app && PYTHONWARNINGS=error pytest
+cd app && PYTHONWARNINGS=error pytest --cov=webapp --cov-report=term-missing
+cd app && PYTHONWARNINGS=error pytest tests/test_routes.py::test_homepage
+```
+
 ## What Gets Configured
 
 This template sets up:

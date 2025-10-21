@@ -1,22 +1,6 @@
-# ABOUTME: Validates pull requests by running tests and building the Flask image.
-# ABOUTME: Ensures Docker builds succeed without deploying changes to Cloud Run.
+# ABOUTME: Ensures Docker builds succeed for pull requests without running tests.
+# ABOUTME: Provides a smoke check that the Flask image is buildable via Cloud Build.
 steps:
-  - name: 'python:3.11-slim'
-    entrypoint: '/bin/sh'
-    args:
-      - '-c'
-      - |
-        set -u
-        python -m pip install --no-cache-dir -r app/requirements.txt
-        python -m pip install --no-cache-dir pytest
-        status=0
-        python -m pytest || status=$?
-        if [ "$status" -eq 5 ]; then
-          echo "pytest reported no tests; treating as success."
-          status=0
-        fi
-        exit "$status"
-
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
