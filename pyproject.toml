@@ -1,0 +1,5 @@
+# ABOUTME: Configures shared tool settings for the repository.
+# ABOUTME: Provides Black defaults for Python formatting.
+[tool.black]
+line-length = 88
+target-version = ["py311"]
