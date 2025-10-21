@@ -44,7 +44,7 @@ RUN useradd -m -s /bin/bash -u 1000 devuser && \
 
 WORKDIR /workspace
 
-COPY app/requirements.txt ./app/
+COPY app/requirements.txt app/requirements-dev.txt ./app/
 RUN pip install --no-cache-dir -r app/requirements.txt
 
 # Create gcloud config directory for devuser
