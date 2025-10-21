@@ -2,7 +2,7 @@ FROM python:3.11-slim
 
 # Install Node.js and git
 RUN apt-get update && \
-    apt-get install -y curl git openssh-client sudo && \
+    apt-get install -y curl git openssh-client sudo make && \
     curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
     apt-get install -y nodejs && \
     apt-get clean && \
@@ -66,3 +66,5 @@ USER root
 # Set ownership and switch to non-root user
 RUN chown -R devuser:devuser /workspace
 USER devuser
+
+RUN python -m pip install --user --no-cache-dir -r /workspace/app/requirements-dev.txt
