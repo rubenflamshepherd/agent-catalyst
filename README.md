@@ -59,6 +59,32 @@ This single command will:
 
 Each step is idempotent - you can safely re-run if something fails.
 
+## Development
+
+Install Python dependencies manually when running outside the dev container:
+
+```bash
+pip install -r app/requirements.txt -r app/requirements-dev.txt
+```
+
+Run the full test suite:
+
+```bash
+cd app && PYTHONWARNINGS=error pytest
+```
+
+Run tests with coverage reporting:
+
+```bash
+cd app && PYTHONWARNINGS=error pytest --cov=webapp --cov-report=term-missing
+```
+
+Run a specific test:
+
+```bash
+cd app && PYTHONWARNINGS=error pytest tests/test_routes.py::test_homepage
+```
+
 ## What Gets Configured
 
 This template sets up:
