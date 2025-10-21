@@ -85,7 +85,7 @@ Run a specific test:
 make test-target TARGET=tests/test_routes.py::test_homepage
 ```
 
-If `make` is unavailable, run the underlying commands directly from `/workspace/app`:
+The `make` command is a wrapper/alias. If you want to run the tests directly run the following commands from `/workspace/app`:
 
 ```bash
 cd app && PYTHONWARNINGS=error pytest
