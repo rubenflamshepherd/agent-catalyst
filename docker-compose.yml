@@ -3,7 +3,7 @@ services:
     build:
       context: ./app/
     env_file:
-      - .env.local
+      - .env
     volumes:
       - ./app/:/app/
     ports:

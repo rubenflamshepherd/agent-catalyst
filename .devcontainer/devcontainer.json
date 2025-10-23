@@ -26,7 +26,7 @@
 
   "forwardPorts": [8080],
 
-  "postCreateCommand": "test -f .env || cp .env.example .env && test -f .env.local || cp .env.example .env.local",
+  "postCreateCommand": "test -f .env || cp .env.example .env",
 
   "remoteUser": "devuser"
 }
