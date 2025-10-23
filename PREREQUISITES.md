@@ -13,11 +13,22 @@ Docker Desktop must be installed and running on your computer.
 
 **Verify:** Open Docker Desktop and confirm it's running.
 
-## 2. Google Cloud Authentication
+## 2. Install Homebrew (macOS/Linux)
+
+Homebrew is a package manager that simplifies installing developer tools. If you're on macOS or Linux and don't have it already, install it from [here](https://brew.sh/).
+
+**Verify after installing :**
+```bash
+brew --version
+```
+
+**Windows users:** Skip this step - Homebrew is not needed on Windows.
+
+## 3. Google Cloud Authentication
 
 You need to authenticate with Google Cloud **on your host machine** (not inside the container). These credentials will be mounted into the dev container automatically.
 
-### 2.1 Install gcloud CLI (Host Machine)
+### 3.1 Install gcloud CLI (Host Machine)
 
 **macOS (Homebrew):**
 ```bash
@@ -26,7 +37,7 @@ brew install --cask google-cloud-sdk
 
 **Other platforms:** See [official installation guide](https://cloud.google.com/sdk/docs/install)
 
-### 2.2 Authenticate (Host Machine)
+### 3.2 Authenticate (Host Machine)
 
 Run **both** of these commands on your host machine:
 
@@ -47,21 +58,27 @@ gcloud auth application-default login
 # Check that you're authenticated
 gcloud auth list
 
-# Verify you can list projects (proves auth + permissions)
+# Verify you can list projects (proves auth + permissions; will be empty if you haven't used GCP)
 gcloud projects list
 ```
 
 Your `~/.config/gcloud` directory will be automatically mounted into the dev container.
 
-## 3. Google Cloud Platform Account
+## 4. Google Cloud Platform Account
 
 You'll need a [Google Cloud Platform account](https://console.cloud.google.com/freetrial/).
 
 The free tier includes $300 in credits for new users.
 
-## 4. Start Dev Container
+**Cost Warning:**
+- Google Cloud requires credit card information even for free tier accounts
+- Expected cost for this deployment: ~$30/month
+- Resources are prorated hourly - if you delete the project after testing, it should cost less than $1/day
+- The $300 free tier credits will cover initial experimentation
 
-Once prerequisites are complete:
+## 5. Start Dev Container
+
+Once prerequisites are complete, run the following commands from the root folder of this project:
 
 ```bash
 # Build the dev container
@@ -73,7 +90,7 @@ docker compose up
 
 Navigate to http://localhost:8080 to verify the app is running.
 
-## 5. Run Setup
+## 6. Run Setup
 
 Inside the dev container (or using `docker exec`):
 
