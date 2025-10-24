@@ -83,6 +83,10 @@ REPO_DISPLAY="${GITHUB_OWNER:-<github-owner>}/${GITHUB_REPO:-<github-repo>}"
 echo "✓ Configuration verified"
 echo ""
 
+echo -e "${YELLOW}This script remains available for initial setup and emergency manual deployments.{NC}"
+echo "After CI/CD is configured, infrastructure changes should deploy automatically on merge to main."
+echo ""
+
 export TF_IN_AUTOMATION=1
 
 run_terraform() {
@@ -160,4 +164,5 @@ echo -e "${GREEN}✓ Infrastructure deployment complete${NC}"
 echo ""
 echo "Next steps:"
 echo "  - Inspect deployed resources in project: $PROD_PROJECT"
-echo "  - Re-run ./setup.sh deploy-infrastructure to reconcile future changes"
+echo "  - Future infrastructure changes will deploy automatically via Cloud Build on merge to main"
+echo "  - Use this script only for emergency manual deployments if CI/CD is unavailable"
