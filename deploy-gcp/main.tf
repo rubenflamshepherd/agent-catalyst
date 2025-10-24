@@ -153,7 +153,7 @@ resource "google_project_iam_member" "build_service_account_roles" {
     "roles/serviceusage.serviceUsageAdmin",
     "roles/iam.serviceAccountAdmin",
     "roles/resourcemanager.projectIamAdmin",
-    "roles/cloudbuild.editor",
+    "roles/cloudbuild.builds.editor",
   ])
 
   project = var.project_id
