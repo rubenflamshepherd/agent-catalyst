@@ -56,6 +56,8 @@ docker compose up
 
 Navigate to http://localhost:8080 to verify the app is running.
 
+The dev container automatically creates `.env` from `.env.example` if it doesn't exist. You can customize this file with your own values as needed.
+
 ### 3. Run Automated Setup
 
 Inside the dev container, run the setup script:

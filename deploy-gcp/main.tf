@@ -197,6 +197,11 @@ resource "google_cloud_run_service" "app" {
       containers {
         image = local.cloud_run_placeholder_image
 
+        env {
+          name  = "ENVIRONMENT"
+          value = "prod"
+        }
+
         ports {
           container_port = 8080
         }

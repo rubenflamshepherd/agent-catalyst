@@ -26,6 +26,7 @@
 
   "forwardPorts": [8080],
 
+  "postCreateCommand": "test -f .env || cp .env.example .env && pre-commit install",
 
   "remoteUser": "devuser"
 }

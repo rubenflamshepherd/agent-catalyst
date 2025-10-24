@@ -1,0 +1,9 @@
+# ABOUTME: Registers repository linting and formatting hooks.
+# ABOUTME: Keeps Python sources formatted with Black.
+repos:
+  - repo: https://github.com/psf/black
+    rev: 24.8.0
+    hooks:
+      - id: black
+        name: black-format
+        files: ^app/.*\.py$
