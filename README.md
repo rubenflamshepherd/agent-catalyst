@@ -102,16 +102,6 @@ Run a specific test:
 make test-target TARGET=tests/test_routes.py::test_homepage
 ```
 
-### Code Formatting
-
-Install the Git hooks once so Black formats staged Python files automatically:
-
-```bash
-pre-commit install
-```
-
-The hook rewrites files in `app/` as needed, so restage any files it updates before committing.
-
 The `make` command is a wrapper/alias. If you want to run the tests directly run the following commands from `/workspace/app`:
 
 ```bash
