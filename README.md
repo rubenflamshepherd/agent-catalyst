@@ -76,6 +76,8 @@ This single command will:
 
 Each step is idempotent - you can safely re-run if something fails.
 
+Once setup finishes, merges to `main` trigger Cloud Build to apply Terraform using `deploy-gcp/cloudbuild-flask.yaml` before the container build and deploy. Keep `./setup/deploy-infrastructure.sh` for IAM bootstrap or emergency recovery.
+
 ## Development
 
 Testing locally is run from inside the dev container. When running outside of the dev container, install dependencies manually:
