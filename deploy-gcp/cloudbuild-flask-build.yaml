@@ -1,6 +1,20 @@
 # ABOUTME: Ensures Docker builds succeed for pull requests without running tests.
 # ABOUTME: Provides a smoke check that the Flask image is buildable via Cloud Build.
 steps:
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: write-terraform-vars
+    entrypoint: 'bash'
+    args:
+      - 'deploy-gcp/scripts/write-terraform-vars.sh'
+      - '$PROJECT_ID'
+      - '${_APP_NAME}'
+      - '${_GITHUB_OWNER}'
+      - '${_GITHUB_REPO}'
+      - '${_REGION}'
+      - '$REPO_FULL_NAME'
+      - '${_HEAD_REPO_URL}'
+      - '$REPO_NAME'
+
   - name: 'hashicorp/terraform:1.13.4'
     id: terraform-init
     dir: deploy-gcp

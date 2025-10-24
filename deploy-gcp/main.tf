@@ -149,11 +149,13 @@ resource "google_project_iam_member" "build_service_account_roles" {
   for_each = toset([
     "roles/logging.logWriter",
     "roles/artifactregistry.writer",
+    "roles/artifactregistry.admin",
     "roles/run.admin",
     "roles/serviceusage.serviceUsageAdmin",
     "roles/iam.serviceAccountAdmin",
     "roles/resourcemanager.projectIamAdmin",
     "roles/cloudbuild.builds.editor",
+    "roles/compute.networkAdmin",
   ])
 
   project = var.project_id
@@ -179,7 +181,7 @@ resource "google_service_account_iam_member" "build_sa_run_service_account_user"
 
 resource "google_storage_bucket_iam_member" "build_service_account_state_bucket_access" {
   bucket = "agent-catalyst-c405ad20-terraform-state"
-  role   = "roles/storage.objectAdmin"
+  role   = "roles/storage.admin"
   member = "serviceAccount:${google_service_account.build.email}"
 }
 
@@ -273,6 +275,12 @@ resource "google_cloudbuild_trigger" "pr_validation" {
     }
   }
 
+  substitutions = {
+    "_APP_NAME"      = var.app_name
+    "_GITHUB_OWNER"  = var.github_owner
+    "_GITHUB_REPO"   = var.github_repo
+  }
+
   depends_on = [google_project_service.required["cloudbuild.googleapis.com"]]
 }
 
@@ -297,6 +305,9 @@ resource "google_cloudbuild_trigger" "deploy_main" {
     "_REGION"                = local.region
     "_ARTIFACT_REPO"         = local.artifact_repo
     "_SERVICE_ACCOUNT_EMAIL" = google_service_account.run.email
+    "_APP_NAME"              = var.app_name
+    "_GITHUB_OWNER"          = var.github_owner
+    "_GITHUB_REPO"           = var.github_repo
   }
 
   depends_on = [google_project_service.required["cloudbuild.googleapis.com"]]
