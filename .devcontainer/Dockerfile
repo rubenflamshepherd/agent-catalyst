@@ -56,7 +56,7 @@ RUN echo 'alias gs="git status"' >> /home/devuser/.bashrc && \
     echo 'alias gcam="git commit --all --message"' >> /home/devuser/.bashrc && \
     echo 'alias gd="git diff"' >> /home/devuser/.bashrc && \
     echo 'alias vamos="claude --dangerously-skip-permissions"' >> /home/devuser/.bashrc && \
-    echo 'alias letsgo="codex --ask-for-approval never"' >> /home/devuser/.bashrc && \
+    echo 'alias letsgo="codex --dangerously-bypass-approvals-and-sandbox"' >> /home/devuser/.bashrc && \
     chown devuser:devuser /home/devuser/.bashrc
 
 # Install Terraform autocomplete as devuser
