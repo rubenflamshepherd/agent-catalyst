@@ -1,6 +1,33 @@
 # ABOUTME: Ensures Docker builds succeed for pull requests without running tests.
 # ABOUTME: Provides a smoke check that the Flask image is buildable via Cloud Build.
 steps:
+  - name: 'hashicorp/terraform:1.13.4'
+    id: terraform-init
+    dir: deploy-gcp
+    env:
+      - 'TF_IN_AUTOMATION=1'
+    args:
+      - 'init'
+      - '-input=false'
+
+  - name: 'hashicorp/terraform:1.13.4'
+    id: terraform-validate
+    dir: deploy-gcp
+    env:
+      - 'TF_IN_AUTOMATION=1'
+    args:
+      - 'validate'
+
+  - name: 'hashicorp/terraform:1.13.4'
+    id: terraform-plan
+    dir: deploy-gcp
+    env:
+      - 'TF_IN_AUTOMATION=1'
+    args:
+      - 'plan'
+      - '-input=false'
+      - '-var-file=terraform.tfvars'
+
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
