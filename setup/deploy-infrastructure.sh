@@ -83,8 +83,7 @@ REPO_DISPLAY="${GITHUB_OWNER:-<github-owner>}/${GITHUB_REPO:-<github-repo>}"
 echo "✓ Configuration verified"
 echo ""
 
-echo -e "${YELLOW}WARNING: Manual terraform deployments will be replaced by automated CI/CD.${NC}"
-echo "This script remains available for initial setup and emergency manual deployments."
+echo -e "${YELLOW}This script remains available for initial setup and emergency manual deployments.{NC}"
 echo "After CI/CD is configured, infrastructure changes should deploy automatically on merge to main."
 echo ""
 
