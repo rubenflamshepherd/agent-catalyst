@@ -150,6 +150,10 @@ resource "google_project_iam_member" "build_service_account_roles" {
     "roles/logging.logWriter",
     "roles/artifactregistry.writer",
     "roles/run.admin",
+    "roles/serviceusage.serviceUsageAdmin",
+    "roles/iam.serviceAccountAdmin",
+    "roles/resourcemanager.projectIamAdmin",
+    "roles/cloudbuild.editor",
   ])
 
   project = var.project_id
@@ -171,6 +175,12 @@ resource "google_service_account_iam_member" "build_sa_run_service_account_user"
   service_account_id = google_service_account.run.name
   role               = "roles/iam.serviceAccountUser"
   member             = "serviceAccount:${google_service_account.build.email}"
+}
+
+resource "google_storage_bucket_iam_member" "build_service_account_state_bucket_access" {
+  bucket = "agent-catalyst-c405ad20-terraform-state"
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${google_service_account.build.email}"
 }
 
 resource "google_artifact_registry_repository_iam_member" "cloud_run_runtime_access" {

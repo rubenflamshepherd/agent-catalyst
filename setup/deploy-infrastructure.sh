@@ -83,8 +83,9 @@ REPO_DISPLAY="${GITHUB_OWNER:-<github-owner>}/${GITHUB_REPO:-<github-repo>}"
 echo "✓ Configuration verified"
 echo ""
 
-echo -e "${YELLOW}This script remains available for initial setup and emergency manual deployments.{NC}"
-echo "After CI/CD is configured, infrastructure changes should deploy automatically on merge to main."
+echo -e "${YELLOW}This script remains available for initial setup and emergency manual deployments.${NC}"
+echo "Cloud Build applies Terraform automatically on merges to main once IAM permissions are in place."
+echo "Use this script to bootstrap those IAM changes or if CI/CD is unavailable."
 echo ""
 
 export TF_IN_AUTOMATION=1

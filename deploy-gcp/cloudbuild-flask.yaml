@@ -1,6 +1,54 @@
 # ABOUTME: Builds, pushes, and deploys the Flask application to Cloud Run.
 # ABOUTME: Runs on main branch pushes using Cloud Build substitutions.
 steps:
+  - name: 'hashicorp/terraform:1.7.5'
+    id: terraform-init
+    dir: deploy-gcp
+    env:
+      - 'TF_IN_AUTOMATION=1'
+    args:
+      - 'init'
+      - '-input=false'
+
+  - name: 'hashicorp/terraform:1.7.5'
+    id: terraform-validate
+    dir: deploy-gcp
+    env:
+      - 'TF_IN_AUTOMATION=1'
+    args:
+      - 'validate'
+
+  - name: 'hashicorp/terraform:1.7.5'
+    id: terraform-plan
+    dir: deploy-gcp
+    env:
+      - 'TF_IN_AUTOMATION=1'
+    args:
+      - 'plan'
+      - '-input=false'
+      - '-var-file=terraform.tfvars'
+      - '-out=tfplan'
+
+  - name: 'hashicorp/terraform:1.7.5'
+    id: terraform-show
+    dir: deploy-gcp
+    env:
+      - 'TF_IN_AUTOMATION=1'
+    args:
+      - 'show'
+      - 'tfplan'
+
+  - name: 'hashicorp/terraform:1.7.5'
+    id: terraform-apply
+    dir: deploy-gcp
+    env:
+      - 'TF_IN_AUTOMATION=1'
+    args:
+      - 'apply'
+      - '-input=false'
+      - '-auto-approve'
+      - 'tfplan'
+
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
