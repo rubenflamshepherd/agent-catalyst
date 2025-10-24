@@ -221,7 +221,7 @@ resource "google_cloud_run_service" "app" {
 
         env {
           name  = "ENVIRONMENT"
-          value = "prod"
+          value = "prod :)"
         }
 
         ports {
