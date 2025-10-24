@@ -1,7 +1,7 @@
 # Custom
 .claude/settings.local.json
 .setup-config
-docs/*
+specs/*
 
 # Terraform
 deploy-gcp/.terraform/
